@@ -517,6 +517,7 @@ extern uchar clear_fullscreen_func(ushort keycode, uint32_t context, intptr_t da
 extern uchar saveload_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
 extern uchar pause_game_func(ushort keycode, uint32_t context, intptr_t data);
 extern uchar reload_weapon_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar eye_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
 extern uchar select_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data);
 extern uchar toggle_olh_func(ushort keycode, uint32_t context, intptr_t data);
 extern uchar select_drug_hotkey(ushort keycode, uint32_t context, intptr_t data);
@@ -576,6 +577,9 @@ HOTKEYLOOKUP HotKeyLookup[] = {
     {"\"reload_weapon 0\"", DEMO_CONTEXT, reload_weapon_hotkey, 0, 0, ALT(KEY_BS), 0},
 	{"\"reload_weapon 1\"", DEMO_CONTEXT, reload_weapon_hotkey, 1, 0, DOWN('v'), 0 },
 	{"\"reload_weapon 0\"", DEMO_CONTEXT, reload_weapon_hotkey, 0, 0, DOWN('r'), 0 },
+	{"\"snap_look_up\"", DEMO_CONTEXT, eye_hotkey_func, 1, 0, DOWN('z'), SHIFT('z') },
+	{"\"snap_look_center\"", DEMO_CONTEXT, eye_hotkey_func, 0, 0, DOWN('x'), SHIFT('x') },
+	{"\"snap_look_down\"", DEMO_CONTEXT, eye_hotkey_func, -1, 0, DOWN('c'), SHIFT('c') },
     {"\"select_grenade\"", DEMO_CONTEXT, select_grenade_hotkey, 0, 0, CTRL('\''), 0},
     {"\"toggle_olh\"", DEMO_CONTEXT, toggle_olh_func, 0, 0, CTRL('h'), 0},
     {"\"select_drug\"", DEMO_CONTEXT, select_drug_hotkey, 0, 0, CTRL(';'), 0},
@@ -626,11 +630,6 @@ HOTKEYLOOKUP HotKeyLookup[] = {
     {"\"cheat_physics\"", DEMO_CONTEXT, toggle_physics_func, TRUE, 0, CTRL('3'), 0},
     {"\"cheat_up_level\"", DEMO_CONTEXT, toggle_up_level_func, TRUE, 0, CTRL('4'), 0},
     {"\"cheat_down_level\"", DEMO_CONTEXT, toggle_down_level_func, TRUE, 0, CTRL('5'), 0},
-
-	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, DOWN('c'), 0 },
-	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, CTRL('c'), 0 },
-	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, SHIFT('c'), 0 },
-	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, ALT('c'), 0 },
 
     {NULL, 0, 0, 0}};
 
