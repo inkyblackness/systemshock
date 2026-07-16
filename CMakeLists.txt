@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.25)
 
 project(shockolate VERSION 0.7.8)
 
 include(FeatureSummary)
+include(FetchContent)
 
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
@@ -63,11 +64,18 @@ if(ENABLE_SDL2 MATCHES "ON")
 	endif(SDL2_FOUND)
 endif(ENABLE_SDL2 MATCHES "ON")
 if(ENABLE_SDL2 MATCHES "BUNDLED")
-	set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
-	find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-	find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-	set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-	set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
+	set(SDL_VERSION 2.32.10)
+	FetchContent_Declare(
+		SDL2
+		GIT_REPOSITORY https://github.com/libsdl-org/SDL
+		GIT_TAG "release-${SDL_VERSION}"
+	)
+
+	set(SDL_TEST OFF CACHE BOOL "Disable SDL Test" FORCE)
+
+	FetchContent_MakeAvailable(SDL2)
+	set(SDL2_INCLUDE_DIRS ${SDL2_SOURCE_DIR}/include)
+	set(SDL2_LIBRARIES SDL2::SDL2main SDL2::SDL2-static)
 endif(ENABLE_SDL2 MATCHES "BUNDLED")
 
 if(ENABLE_SOUND MATCHES "ON")
@@ -77,10 +85,24 @@ if(ENABLE_SOUND MATCHES "ON")
 	add_definitions(-DUSE_SDL_MIXER=1)
 endif(ENABLE_SOUND MATCHES "ON")
 if(ENABLE_SOUND MATCHES "BUNDLED")
-	set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
-	set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
-	find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib)
-	set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_LIBRARY})
+	SET(SDL_MIXER_VERSION 2.8.2)
+	FetchContent_Declare(
+		SDL2_mixer
+		GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+		GIT_TAG release-${SDL_MIXER_VERSION}
+	)
+
+	set(BUILD_SHARED_LIBS FALSE)
+	set(SDL2MIXER_OPUS OFF CACHE BOOL "Disable Opus" FORCE)
+	set(SDL2MIXER_MOD OFF CACHE BOOL "Disable MOD" FORCE)
+	set(SDL2MIXER_MP3 OFF CACHE BOOL "Disable MOD" FORCE)
+	set(SDL2MIXER_MIDI_FLUIDSYNTH OFF CACHE BOOL "Disable MOD" FORCE)
+	set(SDL2MIXER_WAVPACK OFF CACHE BOOL "Disable MOD" FORCE)
+
+	FetchContent_MakeAvailable(SDL2_mixer)
+	set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_mixer_SOURCE_DIR}/include)
+	set(SDL2_MIXER_LIBRARIES SDL2_mixer::SDL2_mixer-static)
+
 	add_definitions(-DUSE_SDL_MIXER=1)
 endif(ENABLE_SOUND MATCHES "BUNDLED")
 
@@ -141,6 +163,32 @@ feature_summary(WHAT DISABLED_FEATURES DESCRIPTION "Disabled features:")
 
 # Sources configuration
 add_subdirectory(src/Libraries/)
+
+include_directories(
+	BEFORE
+	src/Libraries/2D/Source
+	src/Libraries/3D/Source
+	src/Libraries/AFILE/Source
+	src/Libraries/DSTRUCT/Source
+	src/Libraries/EDMS/Source
+	src/Libraries/FIXPP/Source
+	src/Libraries/INPUT/Source
+	src/Libraries/PALETTE/Source
+	src/Libraries/RES/Source
+	src/Libraries/UI/Source
+	src/Libraries/RND/Source
+	src/Libraries/VOX/Source
+	src/Libraries/FIX/Source
+	src/Libraries/SND/Source
+	src/Libraries/H
+	src/Libraries/LG/Source
+	src/Libraries/LG/Source/LOG/src
+	src/Libraries/adlmidi/include
+	src/GameSrc/Headers
+	src/MacSrc
+	src/MusicSrc
+	${CMAKE_BINARY_DIR}/src/GameSrc/Headers
+)
 
 set(MAC_SRC
 	src/MacSrc/ShockBitmap.c
@@ -275,32 +323,6 @@ set(GAME_SRC
 	src/GameSrc/mouselook.c
 )
 
-include_directories(
-	BEFORE
-	src/Libraries/2D/Source
-	src/Libraries/3D/Source
-	src/Libraries/AFILE/Source
-	src/Libraries/DSTRUCT/Source
-	src/Libraries/EDMS/Source
-	src/Libraries/FIXPP/Source
-	src/Libraries/INPUT/Source
-	src/Libraries/PALETTE/Source
-	src/Libraries/RES/Source
-	src/Libraries/UI/Source
-	src/Libraries/RND/Source
-	src/Libraries/VOX/Source
-	src/Libraries/FIX/Source
-	src/Libraries/SND/Source
-	src/Libraries/H
-	src/Libraries/LG/Source
-	src/Libraries/LG/Source/LOG/src
-	src/Libraries/adlmidi/include
-	src/GameSrc/Headers
-	src/MacSrc
-	src/MusicSrc
-	${CMAKE_BINARY_DIR}/src/GameSrc/Headers
-)
-
 if(ENABLE_EXAMPLES)
 
 add_executable(playmov
@@ -375,16 +397,14 @@ target_link_libraries(FixTest
 
 endif()
 
-# Include magic header file, set struct packing size
-add_definitions(
-	-include precompiled.h
-)
-
 add_executable(systemshock
 	${MAC_SRC}
 )
+target_precompile_headers(systemshock PUBLIC src/GameSrc/Headers/precompiled.h)
 
 add_library(GAME_LIB ${GAME_SRC})
+# Include magic header file, set struct packing size
+target_precompile_headers(GAME_LIB PUBLIC src/GameSrc/Headers/precompiled.h)
 
 # MINGW additional linker options
 if(MINGW)
