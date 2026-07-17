@@ -1,11 +1,7 @@
 name: Main Build
 on:
-  push:
-    tags:
-      - v*
-    branches:
-      - **
-  pull_request:
+  push
+  pull_request
 permissions:
   contents: read
 jobs:
