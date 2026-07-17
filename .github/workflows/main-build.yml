@@ -41,6 +41,7 @@ jobs:
           sudo apt-get install -y cmake ${{ matrix.extra_packages }}
       - name: Generate build files
         run: |
+          ls -la
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/${{ matrix.toolchain_file }}
