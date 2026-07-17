@@ -8,7 +8,7 @@ set(CMAKE_CXX_COMPILER g++)
 
 set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
-
+set(CMAKE_EXE_LINKER_FLAGS_INIT "-m32")
 
 # search for programs in the build host directories
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
