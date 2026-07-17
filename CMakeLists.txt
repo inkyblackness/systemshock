@@ -7,8 +7,8 @@ include(FetchContent)
 
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
-set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS OFF)
-set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
+#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS OFF)
+#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
 
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
@@ -52,8 +52,24 @@ if(ENABLE_OPENGL)
 	find_package(OpenGL REQUIRED)
 	add_definitions(-DUSE_OPENGL)
 	if(WIN32)
-		list(APPEND OPENGL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
-		list(APPEND OPENGL_LIBRARIES ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
+		SET(GLEW_version 2.1.0)
+		FetchContent_Declare(
+			glew
+			URL https://sourceforge.net/projects/glew/files/glew/${GLEW_version}/glew-${GLEW_version}.tgz
+		)
+		#FetchContent_MakeAvailable(GLEW)
+		FetchContent_GetProperties(glew)
+		if(NOT glew_POPULATED)
+			FetchContent_Populate(glew)
+
+			message("GLEW src-dir '${glew_SOURCE_DIR}'")
+			message("GLEW bin-dir '${glew_BINARY_DIR}'")
+
+			add_subdirectory(${glew_SOURCE_DIR}/build/cmake ${glew_BINARY_DIR})
+		endif()
+
+		list(APPEND OPENGL_INCLUDE_DIRS ${glew_SOURCE_DIR}/include)
+		list(APPEND OPENGL_LIBRARIES glew_s winmm)
 	endif(WIN32)
 endif(ENABLE_OPENGL)
 
@@ -71,6 +87,7 @@ if(ENABLE_SDL2 MATCHES "BUNDLED")
 		GIT_TAG "release-${SDL_VERSION}"
 	)
 
+	set(SDL_SHARED OFF CACHE BOOL "Disabled SDL shared lib" FORCE)
 	set(SDL_TEST OFF CACHE BOOL "Disable SDL Test" FORCE)
 
 	FetchContent_MakeAvailable(SDL2)
@@ -119,11 +136,18 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
   	GIT_TAG ${FLUIDSYNTH_REVISION}
   )
 
+  if ( WIN32 )
+    # Sadly, FluidSynth-Lite has its CMakeLists.txt hardcoded to make its functions as exports.
+    # Idea: Modify CMakeLists.txt as part of this block here?
+  	set(BUILD_SHARED_LIBS TRUE)
+  endif ( WIN32 )
   FetchContent_MakeAvailable(FluidSynth)
-  set(FLUIDSYNTH_INCLUDE_DIRS ${FluidSynth_SOURCE_DIR}/include ${FluidSynth_BINARY_DIR}/include)
-  find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS ${FluidSynth_SOURCE_DIR}/include ${FluidSynth_BINARY_DIR}/src)
-  set(FLUIDSYNTH_LIBRARIES ${FLUIDSYNTH_LIBRARY})
+  message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
+  message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
 
+  set(FLUIDSYNTH_INCLUDE_DIRS ${FLUIDSYNTH_INCLUDE_DIR})
+
+  set(BUILD_SHARED_LIBS FALSE)
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 
