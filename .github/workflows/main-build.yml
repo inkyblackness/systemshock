@@ -41,7 +41,7 @@ jobs:
       - name: Install things
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake3 gcc g++ ${{ matrix.extra_packages }}
+          sudo apt-get install -y cmake gcc g++ ${{ matrix.extra_packages }}
       - name: Generate build files
         run: |
           mkdir build
