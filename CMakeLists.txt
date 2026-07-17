@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.25)
 
 project(shockolate VERSION 0.7.8)
 
+# Prefer new GLVND library interface
+if(POLICY CMP0072)
+	cmake_policy(SET CMP0072 NEW)
+endif()
+
 include(FeatureSummary)
 include(FetchContent)
 
