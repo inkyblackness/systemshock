@@ -15,7 +15,7 @@ jobs:
         include:
         - os: linux
           arch: x86-64
-          toolchain_file: 'x64-64-gcc.cmake'
+          toolchain_file: 'x86-64-gcc.cmake'
           extra_packages: 'gcc g++ mesa-utils mesa-common-dev xorg-dev libxrandr-dev'
           
         - os: linux
@@ -41,7 +41,6 @@ jobs:
           sudo apt-get install -y cmake ${{ matrix.extra_packages }}
       - name: Generate build files
         run: |
-          ls -la
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/${{ matrix.toolchain_file }}
