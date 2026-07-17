@@ -21,7 +21,7 @@ jobs:
         - os: linux
           arch: i686
           toolchain_file: 'i686-gcc.cmake'
-          extra_packages: 'gcc-multilib g++-multilib mesa-utils:i386 mesa-common-dev:i386 xorg-dev:i386 libxrandr-dev:i386'
+          extra_packages: 'gcc-multilib g++-multilib mesa-utils mesa-common-dev:i386 xorg-dev libxrandr-dev'
           
         - os: mswin
           arch: x86-64
