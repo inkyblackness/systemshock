@@ -10,12 +10,12 @@ permissions:
   contents: read
 jobs:
   build:
-    name: ${{matrix.build}}
+    name: ${{matrix.os}} - ${{matrix.arch}}
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         os: [ linux, mswin ]
-        arch: [x86-64, i686]
+        arch: [ x86-64, i686 ]
         include:
         - os: linux
           arch: x86-64
