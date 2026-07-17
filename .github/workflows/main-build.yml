@@ -1,0 +1,44 @@
+name: Main Build
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    name: ${{matrix.os}} - ${{matrix.arch}}
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ linux, mswin ]
+        arch: [ x86-64, i686 ]
+        include:
+        - os: linux
+          arch: x86-64
+          toolchain_file: 'x64-64-gcc.cmake'
+          extra_packages: 'mesa-utils mesa-common-dev xorg-dev libxrandr-dev'
+          
+        - os: linux
+          arch: i686
+          toolchain_file: 'i686-gcc.cmake'
+          extra_packages: 'mesa-utils mesa-common-dev xorg-dev libxrandr-dev'
+          
+        - os: mswin
+          arch: x86-64
+          toolchain_file: 'x86-64-w64-mingw32.cmake'
+          extra_packages: 'gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64'
+          
+        - os: mswin
+          arch: i686
+          toolchain_file: 'i686-w64-mingw32.cmake'
+          extra_packages: 'gcc-mingw-w64-i686 g++-mingw-w64-i686'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install things
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake gcc g++ ${{ matrix.extra_packages }}
