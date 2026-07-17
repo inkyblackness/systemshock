@@ -95,9 +95,9 @@ if(ENABLE_SOUND MATCHES "BUNDLED")
 	set(BUILD_SHARED_LIBS FALSE)
 	set(SDL2MIXER_OPUS OFF CACHE BOOL "Disable Opus" FORCE)
 	set(SDL2MIXER_MOD OFF CACHE BOOL "Disable MOD" FORCE)
-	set(SDL2MIXER_MP3 OFF CACHE BOOL "Disable MOD" FORCE)
-	set(SDL2MIXER_MIDI_FLUIDSYNTH OFF CACHE BOOL "Disable MOD" FORCE)
-	set(SDL2MIXER_WAVPACK OFF CACHE BOOL "Disable MOD" FORCE)
+	set(SDL2MIXER_MP3 OFF CACHE BOOL "Disable MP3" FORCE)
+	set(SDL2MIXER_MIDI_FLUIDSYNTH OFF CACHE BOOL "Disable FluidSynth" FORCE)
+	set(SDL2MIXER_WAVPACK OFF CACHE BOOL "Disable WavPack" FORCE)
 
 	FetchContent_MakeAvailable(SDL2_mixer)
 	set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_mixer_SOURCE_DIR}/include)
@@ -112,9 +112,18 @@ if(ENABLE_FLUIDSYNTH MATCHES "ON")
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "ON")
 if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
-        find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS ${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/src)
-	set(FLUIDSYNTH_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/include)
-	set(FLUIDSYNTH_LIBRARIES ${FLUIDSYNTH_LIBRARY})
+  SET(FLUIDSYNTH_REVISION c539a8d9270ba5a3f7d6e460606483fc2ab1eb61)
+  FetchContent_Declare(
+  	FluidSynth
+  	GIT_REPOSITORY https://github.com/EtherTyper/fluidsynth-lite.git
+  	GIT_TAG ${FLUIDSYNTH_REVISION}
+  )
+
+  FetchContent_MakeAvailable(FluidSynth)
+  set(FLUIDSYNTH_INCLUDE_DIRS ${FluidSynth_SOURCE_DIR}/include ${FluidSynth_BINARY_DIR}/include)
+  find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS ${FluidSynth_SOURCE_DIR}/include ${FluidSynth_BINARY_DIR}/src)
+  set(FLUIDSYNTH_LIBRARIES ${FLUIDSYNTH_LIBRARY})
+
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 
