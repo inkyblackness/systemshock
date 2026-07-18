@@ -139,7 +139,7 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 	FetchContent_MakeAvailable(FluidSynth)
 	message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
 	message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
-	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 15)
 		# This is a necessary hack; gcc-15 warns (errors) if a static array is initialized
 		# with a string that exceeds its storage. This is the case for fluid_defsfont.c,
 		# where it initializes idlist.
