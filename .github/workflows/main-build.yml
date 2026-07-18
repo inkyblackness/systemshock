@@ -64,7 +64,6 @@ jobs:
           tar -xzf cmake-3.31.12-macos-universal.tar.gz
           sudo cp -r cmake-3.31.12-macos-universal/CMake.app /Applications/
           echo "/Applications/CMake.app/Contents/bin" >> $GITHUB_PATH
-          cmake -version
           brew install ninja
 
       - name: Generate build files
