@@ -39,9 +39,10 @@ jobs:
             extra_packages: 'gcc-mingw-w64-i686 g++-mingw-w64-i686'
 
           # macOS builds (native compilation)
-          - os: macos
-            arch: arm64
-            runner: macos-14
+          # Disabled build because of alignment issues during linking.
+          #- os: macos
+          #  arch: arm64
+          #  runner: macos-14
     steps:
       - uses: actions/checkout@v7
 
