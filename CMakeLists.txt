@@ -146,9 +146,8 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 	message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
 	message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
 	if(APPLE)
-		# This is a necessary hack; compiler warns (errors) for wrong bit assignment.
-		# This is the case for fluid_synth.c, for a TRUE assignment.
-		target_compile_options(libfluidsynth PRIVATE -Wno-error=single-bit-bitfield-constant-conversion)
+		# This is a necessary hack; compiler errors for various things.
+		target_compile_options(libfluidsynth PRIVATE -Wno-error=single-bit-bitfield-constant-conversion -Wno-unused-but-set-variable)
 	endif()
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 15)
 		# This is a necessary hack; gcc-15 warns (errors) if a static array is initialized
