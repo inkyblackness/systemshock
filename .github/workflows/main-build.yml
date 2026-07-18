@@ -50,3 +50,13 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/${{ matrix.toolchain_file }}
       - name: Build
         run: cmake --build build -j $(nproc)
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: systemshock-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            build/systemshock
+            build/*.exe
+            build/*/.dll
+          if-no-files-found: warn
