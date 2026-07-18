@@ -145,8 +145,8 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 	FetchContent_MakeAvailable(FluidSynth)
 	message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
 	message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
-	if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 11)
-		# This is a necessary hack; gcc-11 warns (errors) for wrong bit assignment.
+	if(APPLE)
+		# This is a necessary hack; compiler warns (errors) for wrong bit assignment.
 		# This is the case for fluid_synth.c, for a TRUE assignment.
 		target_compile_options(libfluidsynth PRIVATE -Wno-error=single-bit-bitfield-constant-conversion)
 	endif()
