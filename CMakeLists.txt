@@ -124,12 +124,12 @@ if(ENABLE_FLUIDSYNTH MATCHES "ON")
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "ON")
 if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
-  SET(FLUIDSYNTH_REVISION c539a8d9270ba5a3f7d6e460606483fc2ab1eb61)
-  FetchContent_Declare(
-  	FluidSynth
-  	GIT_REPOSITORY https://github.com/EtherTyper/fluidsynth-lite.git
-  	GIT_TAG ${FLUIDSYNTH_REVISION}
-  )
+	SET(FLUIDSYNTH_REVISION c539a8d9270ba5a3f7d6e460606483fc2ab1eb61)
+	FetchContent_Declare(
+		FluidSynth
+		GIT_REPOSITORY https://github.com/EtherTyper/fluidsynth-lite.git
+		GIT_TAG ${FLUIDSYNTH_REVISION}
+	)
 
 	if ( WIN32 )
 		# Sadly, FluidSynth-Lite has its CMakeLists.txt hardcoded to make its functions as exports.
@@ -139,7 +139,12 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 	FetchContent_MakeAvailable(FluidSynth)
 	message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
 	message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
-
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		# This is a necessary hack; gcc-15 warns (errors) if a static array is initialized
+		# with a string that exceeds its storage. This is the case for fluid_defsfont.c,
+		# where it initializes idlist.
+		target_compile_options(libfluidsynth PRIVATE -Wno-error=unterminated-string-initialization)
+	endif()
 	set(FLUIDSYNTH_INCLUDE_DIRS ${FLUIDSYNTH_INCLUDE_DIR})
 
 	set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Restore creation of static libraries" FORCE)
