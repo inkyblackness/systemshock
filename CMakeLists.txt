@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.28)
 
 project(shockolate VERSION 0.7.8)
 
@@ -58,7 +58,7 @@ if(ENABLE_OPENGL)
 			glew
 			URL https://sourceforge.net/projects/glew/files/glew/${GLEW_version}/glew-${GLEW_version}.tgz
 			SOURCE_SUBDIR build/cmake
-			SYSTEM
+			EXCLUDE_FROM_ALL
 		)
 		FetchContent_MakeAvailable(GLEW)
 
@@ -82,7 +82,7 @@ if(ENABLE_SDL2 MATCHES "BUNDLED")
 		SDL2
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL
 		GIT_TAG "release-${SDL_VERSION}"
-		SYSTEM
+		EXCLUDE_FROM_ALL
 	)
 
 	set(SDL_SHARED OFF CACHE BOOL "Disabled SDL shared lib" FORCE)
@@ -106,7 +106,7 @@ if(ENABLE_SOUND MATCHES "BUNDLED")
 		SDL2_mixer
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
 		GIT_TAG release-${SDL_MIXER_VERSION}
-		SYSTEM
+		EXCLUDE_FROM_ALL
 	)
 
 	set(SDL2MIXER_OPUS OFF CACHE BOOL "Disable Opus" FORCE)
@@ -134,7 +134,7 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 		FluidSynth
 		GIT_REPOSITORY https://github.com/EtherTyper/fluidsynth-lite.git
 		GIT_TAG ${FLUIDSYNTH_REVISION}
-		SYSTEM
+		EXCLUDE_FROM_ALL
 	)
 
 	if ( WIN32 )
