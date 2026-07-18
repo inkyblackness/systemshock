@@ -2,10 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 
 project(shockolate VERSION 0.7.8)
 
-# Prefer new GLVND library interface
-if(POLICY CMP0072)
-	cmake_policy(SET CMP0072 NEW)
-endif()
+cmake_policy(SET CMP0072 NEW) # Prefer new GLVND library interface
+cmake_policy(SET CMP0077 NEW) # Abort if variables are not clearly set
 
 include(FeatureSummary)
 include(FetchContent)
@@ -37,6 +35,9 @@ add_feature_info(ENABLE_SOUND ENABLE_SOUND "Enable sound support (requires SDL2_
 set(ENABLE_FLUIDSYNTH "BUNDLED" CACHE STRING "Enable FluidSynth MIDI support (ON/BUNDLED/OFF, default BUNDLED)")
 set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "BUNDLED" "OFF")
 add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support")
+
+# To keep a minimum dependency list, any created library should be static, even third-party dependencies.
+set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Force creation of static libraries, globally" FORCE)
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -104,7 +105,6 @@ if(ENABLE_SOUND MATCHES "BUNDLED")
 		GIT_TAG release-${SDL_MIXER_VERSION}
 	)
 
-	set(BUILD_SHARED_LIBS FALSE)
 	set(SDL2MIXER_OPUS OFF CACHE BOOL "Disable Opus" FORCE)
 	set(SDL2MIXER_MOD OFF CACHE BOOL "Disable MOD" FORCE)
 	set(SDL2MIXER_MP3 OFF CACHE BOOL "Disable MP3" FORCE)
@@ -131,18 +131,18 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
   	GIT_TAG ${FLUIDSYNTH_REVISION}
   )
 
-  if ( WIN32 )
-    # Sadly, FluidSynth-Lite has its CMakeLists.txt hardcoded to make its functions as exports.
-    # Idea: Modify CMakeLists.txt as part of this block here?
-  	set(BUILD_SHARED_LIBS TRUE)
-  endif ( WIN32 )
-  FetchContent_MakeAvailable(FluidSynth)
-  message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
-  message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
+	if ( WIN32 )
+		# Sadly, FluidSynth-Lite has its CMakeLists.txt hardcoded to make its functions as exports.
+		# Idea: Modify CMakeLists.txt as part of this block here?
+		set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Force shared libs for FluidSynth on Windows" FORCE)
+	endif ( WIN32 )
+	FetchContent_MakeAvailable(FluidSynth)
+	message("FluidSynth src-dir '${FluidSynth_SOURCE_DIR}'")
+	message("FluidSynth bin-dir '${FluidSynth_BINARY_DIR}'")
 
-  set(FLUIDSYNTH_INCLUDE_DIRS ${FLUIDSYNTH_INCLUDE_DIR})
+	set(FLUIDSYNTH_INCLUDE_DIRS ${FLUIDSYNTH_INCLUDE_DIR})
 
-  set(BUILD_SHARED_LIBS FALSE)
+	set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Restore creation of static libraries" FORCE)
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 
