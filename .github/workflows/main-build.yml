@@ -9,6 +9,7 @@ jobs:
     name: ${{matrix.os}} - ${{matrix.arch}}
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         os: [ linux, mswin ]
         arch: [ x86-64, i686 ]
@@ -33,18 +34,19 @@ jobs:
           toolchain_file: 'i686-w64-mingw32.cmake'
           extra_packages: 'gcc-mingw-w64-i686 g++-mingw-w64-i686'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install things
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y cmake ${{ matrix.extra_packages }}
       - name: Generate build files
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/${{ matrix.toolchain_file }}
-      - name: Compile and link
-        run: |
-          cd build
-          cmake --build . -j6
+        run: >
+          cmake 
+          -B build 
+          -S . 
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo 
+          -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/${{ matrix.toolchain_file }}
+      - name: Build
+        run: cmake --build build -j $(nproc)
