@@ -58,6 +58,7 @@ if(ENABLE_OPENGL)
 			glew
 			URL https://sourceforge.net/projects/glew/files/glew/${GLEW_version}/glew-${GLEW_version}.tgz
 			SOURCE_SUBDIR build/cmake
+			SYSTEM
 		)
 		FetchContent_MakeAvailable(GLEW)
 
@@ -81,10 +82,12 @@ if(ENABLE_SDL2 MATCHES "BUNDLED")
 		SDL2
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL
 		GIT_TAG "release-${SDL_VERSION}"
+		SYSTEM
 	)
 
 	set(SDL_SHARED OFF CACHE BOOL "Disabled SDL shared lib" FORCE)
 	set(SDL_TEST OFF CACHE BOOL "Disable SDL Test" FORCE)
+	set(SDL_INSTALL OFF CACHE BOOL "Disable SDL installation" FORCE)
 
 	FetchContent_MakeAvailable(SDL2)
 	set(SDL2_INCLUDE_DIRS ${SDL2_SOURCE_DIR}/include)
@@ -103,6 +106,7 @@ if(ENABLE_SOUND MATCHES "BUNDLED")
 		SDL2_mixer
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
 		GIT_TAG release-${SDL_MIXER_VERSION}
+		SYSTEM
 	)
 
 	set(SDL2MIXER_OPUS OFF CACHE BOOL "Disable Opus" FORCE)
@@ -110,6 +114,7 @@ if(ENABLE_SOUND MATCHES "BUNDLED")
 	set(SDL2MIXER_MP3 OFF CACHE BOOL "Disable MP3" FORCE)
 	set(SDL2MIXER_MIDI_FLUIDSYNTH OFF CACHE BOOL "Disable FluidSynth" FORCE)
 	set(SDL2MIXER_WAVPACK OFF CACHE BOOL "Disable WavPack" FORCE)
+	set(SDL2MIXER_INSTALL OFF CACHE BOOL "Disable SDL_mixer installation" FORCE)
 
 	FetchContent_MakeAvailable(SDL2_mixer)
 	set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_mixer_SOURCE_DIR}/include)
@@ -129,6 +134,7 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 		FluidSynth
 		GIT_REPOSITORY https://github.com/EtherTyper/fluidsynth-lite.git
 		GIT_TAG ${FLUIDSYNTH_REVISION}
+		SYSTEM
 	)
 
 	if ( WIN32 )
@@ -484,6 +490,20 @@ install(TARGETS systemshock
 if(WIN32)
 	if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 		install(FILES $<TARGET_FILE:libfluidsynth> DESTINATION .)
+	endif()
+
+	# Resolve and install MinGW runtime DLLs
+	if(MINGW)
+		foreach(DLL libgcc_s_seh-1.dll libstdc++-6.dll)
+			execute_process(
+				COMMAND ${CMAKE_C_COMPILER} -print-file-name=${DLL}
+				OUTPUT_VARIABLE DLL_PATH
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+			if(EXISTS "${DLL_PATH}" AND NOT "${DLL_PATH}" STREQUAL "${DLL}")
+				install(FILES "${DLL_PATH}" DESTINATION .)
+			endif()
+		endforeach()
 	endif()
 endif()
 
