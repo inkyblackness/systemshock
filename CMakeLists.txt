@@ -475,3 +475,21 @@ target_link_libraries(systemshock
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers)
 add_sanitizers(systemshock)
+
+# --- Installation Rules ---
+
+install(TARGETS systemshock
+	RUNTIME DESTINATION .
+)
+if(WIN32)
+	if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
+		install(FILES $<TARGET_FILE:libfluidsynth> DESTINATION .)
+	endif()
+endif()
+
+install(FILES
+	${CMAKE_SOURCE_DIR}/README.md
+	${CMAKE_SOURCE_DIR}/LICENSE
+	${CMAKE_SOURCE_DIR}/COPYING.txt
+	DESTINATION .
+)

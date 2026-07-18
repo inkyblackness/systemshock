@@ -35,7 +35,7 @@ jobs:
           extra_packages: 'gcc-mingw-w64-i686 g++-mingw-w64-i686'
     steps:
       - uses: actions/checkout@v7
-      - name: Install things
+      - name: Install build dependencies
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
@@ -50,13 +50,12 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/${{ matrix.toolchain_file }}
       - name: Build
         run: cmake --build build -j $(nproc)
+      - name: Prepare distribution package
+        run: cmake --install build --prefix dist
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v7
         with:
           name: systemshock-${{ matrix.os }}-${{ matrix.arch }}
-          path: |
-            build/systemshock
-            build/*.exe
-            build/*/*.dll
+          path: dist/
           if-no-files-found: warn
