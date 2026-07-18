@@ -24,4 +24,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 # a `file unknown error` unless the target platform is explicitly specified.
 set(CMAKE_GET_RUNTIME_DEPENDENCIES_PLATFORM "windows+pe")
 
-set(TOOLCHAIN_DLL_DEPENDENCIES libgcc_s_sjlj-1.dll libstdc++-6.dll)
+set(TOOLCHAIN_DLL_DEPENDENCIES libgcc_s_dw2-1.dll libstdc++-6.dll)
