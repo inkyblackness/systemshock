@@ -58,5 +58,5 @@ jobs:
           path: |
             build/systemshock
             build/*.exe
-            build/*/.dll
+            build/*/*.dll
           if-no-files-found: warn
