@@ -477,10 +477,6 @@ target_link_libraries(systemshock
 	${ALSA_LIBRARIES}
 )
 
-if(MINGW)
-	target_link_options(systemshock PRIVATE "-static-libgcc" "-static-libstdc++")
-endif(MINGW)
-
 # Turn on address sanitizing if wanted
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers)
