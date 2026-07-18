@@ -56,17 +56,12 @@ if(ENABLE_OPENGL)
 		FetchContent_Declare(
 			glew
 			URL https://sourceforge.net/projects/glew/files/glew/${GLEW_version}/glew-${GLEW_version}.tgz
+			SOURCE_SUBDIR build/cmake
 		)
-		#FetchContent_MakeAvailable(GLEW)
-		FetchContent_GetProperties(glew)
-		if(NOT glew_POPULATED)
-			FetchContent_Populate(glew)
+		FetchContent_MakeAvailable(GLEW)
 
-			message("GLEW src-dir '${glew_SOURCE_DIR}'")
-			message("GLEW bin-dir '${glew_BINARY_DIR}'")
-
-			add_subdirectory(${glew_SOURCE_DIR}/build/cmake ${glew_BINARY_DIR})
-		endif()
+		message("GLEW src-dir '${glew_SOURCE_DIR}'")
+		message("GLEW bin-dir '${glew_BINARY_DIR}'")
 
 		list(APPEND OPENGL_INCLUDE_DIRS ${glew_SOURCE_DIR}/include)
 		list(APPEND OPENGL_LIBRARIES glew_s winmm)
