@@ -40,10 +40,6 @@ jobs:
 
           # macOS builds (native compilation)
           - os: macos
-            arch: x86-64
-            runner: macos-12
-
-          - os: macos
             arch: arm64
             runner: macos-14
     steps:
