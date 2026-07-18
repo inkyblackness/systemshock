@@ -10,11 +10,6 @@ endif()
 include(FeatureSummary)
 include(FetchContent)
 
-#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
-#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
-#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS OFF)
-#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
-
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
 # For nullptr in C++
