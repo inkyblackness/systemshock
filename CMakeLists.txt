@@ -477,6 +477,10 @@ target_link_libraries(systemshock
 	${ALSA_LIBRARIES}
 )
 
+if(MINGW)
+	target_link_options(systemshock PRIVATE "-static-libgcc" "-static-libstdc++")
+endif(MINGW)
+
 # Turn on address sanitizing if wanted
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers)
@@ -490,20 +494,6 @@ install(TARGETS systemshock
 if(WIN32)
 	if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 		install(FILES $<TARGET_FILE:libfluidsynth> DESTINATION .)
-	endif()
-
-	# Resolve and install MinGW runtime DLLs
-	if(MINGW)
-		foreach(DLL libgcc_s_seh-1.dll libstdc++-6.dll)
-			execute_process(
-				COMMAND ${CMAKE_C_COMPILER} -print-file-name=${DLL}
-				OUTPUT_VARIABLE DLL_PATH
-				OUTPUT_STRIP_TRAILING_WHITESPACE
-			)
-			if(EXISTS "${DLL_PATH}" AND NOT "${DLL_PATH}" STREQUAL "${DLL}")
-				install(FILES "${DLL_PATH}" DESTINATION .)
-			endif()
-		endforeach()
 	endif()
 endif()
 
