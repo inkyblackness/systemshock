@@ -491,6 +491,28 @@ if(WIN32)
 	if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 		install(FILES $<TARGET_FILE:libfluidsynth> DESTINATION .)
 	endif()
+
+	# Resolve and install MinGW runtime DLLs
+	if(MINGW)
+		foreach(DLL libgcc_s_seh-1.dll libstdc++-6.dll)
+			execute_process(
+				COMMAND ${CMAKE_C_COMPILER} -print-file-name=${DLL}
+				OUTPUT_VARIABLE DLL_PATH
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+			if(EXISTS "${DLL_PATH}" AND NOT "${DLL_PATH}" STREQUAL "${DLL}")
+				install(FILES "${DLL_PATH}" DESTINATION .)
+			else()
+				# If -print-file-name fails, try to find it in the compiler's bin directory.
+				get_filename_component(COMPILER_DIR "${CMAKE_C_COMPILER}" DIRECTORY)
+				if(EXISTS "${COMPILER_DIR}/${DLL}")
+					set(DLL_PATH "${COMPILER_DIR}/${DLL}")
+				else()
+					message(WARNING "DLL '${DLL}' not resolved - it will be missing in the package")
+				endif()
+			endif()
+		endforeach()
+	endif()
 endif()
 
 install(FILES
