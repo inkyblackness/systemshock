@@ -631,6 +631,11 @@ HOTKEYLOOKUP HotKeyLookup[] = {
     {"\"cheat_up_level\"", DEMO_CONTEXT, toggle_up_level_func, TRUE, 0, CTRL('4'), 0},
     {"\"cheat_down_level\"", DEMO_CONTEXT, toggle_down_level_func, TRUE, 0, CTRL('5'), 0},
 
+	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, DOWN('c'), 0 },
+	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, CTRL('c'), 0 },
+	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, SHIFT('c'), 0 },
+	{ "\"quick_use\"", DEMO_CONTEXT, quick_use, 0, 0, ALT('c'), 0 },
+
     {NULL, 0, 0, 0}};
 
 // ought to be enough for anybody
